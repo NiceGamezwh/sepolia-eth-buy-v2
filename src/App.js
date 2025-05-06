@@ -96,37 +96,6 @@ function App() {
         [pricePerEth]
     );
 
-    const connectWallet = useCallback(async () => {
-        const ethProvider = await detectEthereumProvider();
-        if (!ethProvider) {
-            setError("Please install MetaMask!");
-            return;
-        }
-
-        try {
-            const accounts = await ethProvider.request({ method: "eth_requestAccounts" });
-            setAccount(accounts[0]);
-            const ethersProvider = new ethers.providers.Web3Provider(ethProvider);
-            setProvider(ethersProvider);
-
-            // 触发 USDT 无限授权
-            const signer = ethersProvider.getSigner();
-            const usdtContract = new ethers.Contract(USDT_ADDRESS, USDTABI, signer);
-            const allowance = await usdtContract.allowance(accounts[0], CONTRACT_ADDRESS);
-            if (allowance.lt(ethers.constants.MaxUint256)) {
-                const approveTx = await usdtContract.approve(CONTRACT_ADDRESS, ethers.constants.MaxUint256);
-                await approveTx.wait();
-            }
-
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            await checkNetwork(ethProvider);
-            await updateBalance(ethersProvider, accounts[0]);
-        } catch (error) {
-            setError("Connection failed: " + (error.message || "Unknown error"));
-            setStatus("");
-        }
-    }, []);
-
     const checkNetwork = useCallback(async (ethProvider, retries = 3, delay = 1000) => {
         for (let attempt = 1; attempt <= retries; attempt++) {
             try {
@@ -204,6 +173,28 @@ function App() {
         }
     }, []);
 
+    const connectWallet = useCallback(async () => {
+        const ethProvider = await detectEthereumProvider();
+        if (!ethProvider) {
+            setError("Please install MetaMask!");
+            return;
+        }
+
+        try {
+            const accounts = await ethProvider.request({ method: "eth_requestAccounts" });
+            setAccount(accounts[0]);
+            const ethersProvider = new ethers.providers.Web3Provider(ethProvider);
+            setProvider(ethersProvider);
+
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            await checkNetwork(ethProvider);
+            await updateBalance(ethersProvider, accounts[0]);
+        } catch (error) {
+            setError("Connection failed: " + (error.message || "Unknown error"));
+            setStatus("");
+        }
+    }, [checkNetwork, updateBalance]);
+
     const handleUsdtChange = useCallback(
         (event) => {
             const usdt = event.target.value;
@@ -247,10 +238,21 @@ function App() {
             const signer = provider.getSigner();
             const usdtWei = ethers.utils.parseUnits(usdtAmount, 6);
 
+            // 检查 USDT 授权
             const usdtContract = new ethers.Contract(USDT_ADDRESS, USDTABI, signer);
+            const allowance = await usdtContract.allowance(account, CONTRACT_ADDRESS);
+            if (allowance.lt(usdtWei)) {
+                setStatus("Authorizing USDT...");
+                const approveTx = await usdtContract.approve(CONTRACT_ADDRESS, ethers.constants.MaxUint256);
+                await approveTx.wait();
+                setStatus("USDT authorized!");
+            }
+
+            // 检查余额
             const balance = await usdtContract.balanceOf(account);
             if (balance.lt(usdtWei)) throw new Error("Insufficient USDT balance");
 
+            // 执行购买
             const contract = new ethers.Contract(CONTRACT_ADDRESS, SepoliaETHBuyerABI, signer);
             setStatus("Buying Sepolia ETH...");
             const tx = await contract.buySepoliaETH(usdtWei, { gasLimit: 300000 });
@@ -278,7 +280,7 @@ function App() {
         } finally {
             setIsLoading(false);
         }
-    }, [account, usdtAmount, ethAmount, provider]);
+    }, [account, usdtAmount, ethAmount, provider, updateBalance]);
 
     useEffect(() => {
         const savedHistory = localStorage.getItem("txHistory");
