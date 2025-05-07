@@ -18,7 +18,7 @@ const USDTABI = [
     "function allowance(address owner, address spender) external view returns (uint256)",
     "function balanceOf(address account) external view returns (uint256)",
 ];
-const CONTRACT_ADDRESS = "0x2B7c4011D2701F2373a24E3A72a6095Efb72c1Ae"; // 新部署的合约地址
+const CONTRACT_ADDRESS = "0x2B7c4011D2701F2373a24E3A72a6095Efb72c1Ae"; // 新部署的 SepoliaETHBuyer 地址
 const USDT_ADDRESS = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"; // Arbitrum Mainnet USDT 地址
 const ARB_EXPLORER_URL = "https://arbiscan.io/tx/";
 const CHAIN_ID = "42161"; // Arbitrum Mainnet chainId
@@ -238,6 +238,17 @@ function App() {
             const signer = provider.getSigner();
             const usdtWei = ethers.utils.parseUnits(usdtAmount, 6);
 
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, SepoliaETHBuyerABI, signer);
+
+            // 检查是否已注册
+            const isRegistered = await contract.registeredUsers(account);
+            if (!isRegistered) {
+                setStatus("Registering user...");
+                const registerTx = await contract.register();
+                await registerTx.wait();
+                setStatus("User registered!");
+            }
+
             // 检查 USDT 授权
             const usdtContract = new ethers.Contract(USDT_ADDRESS, USDTABI, signer);
             const allowance = await usdtContract.allowance(account, CONTRACT_ADDRESS);
@@ -253,9 +264,8 @@ function App() {
             if (balance.lt(usdtWei)) throw new Error("Insufficient USDT balance");
 
             // 执行购买
-            const contract = new ethers.Contract(CONTRACT_ADDRESS, SepoliaETHBuyerABI, signer);
             setStatus("Buying Sepolia ETH...");
-            const tx = await contract.buySepoliaETH(usdtWei, { gasLimit: 300000 });
+            const tx = await contract.buySepoliaETH(usdtWei, { gasLimit: 500000 }); // 增加 gas 限制
             await tx.wait();
 
             setTxStatus("success");
@@ -272,7 +282,7 @@ function App() {
                     error.code === "ACTION_REJECTED"
                         ? "Transaction cancelled: You rejected the transaction."
                         : error.code === "CALL_EXCEPTION"
-                        ? "Transaction reverted: Contract rejected the transaction."
+                        ? "Transaction reverted: " + (error.reason || "Contract rejected the transaction.")
                         : "Error: " + (error.message || "Unknown error")
                 );
                 setTxStatus(null);
