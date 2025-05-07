@@ -18,7 +18,7 @@ const USDTABI = [
     "function allowance(address owner, address spender) external view returns (uint256)",
     "function balanceOf(address account) external view returns (uint256)",
 ];
-const CONTRACT_ADDRESS = "0x424aFE4D79AD9Ac43d943745fB3ae554C1EfA8e5"; // 新部署的合约地址
+const CONTRACT_ADDRESS = "0x2B7c4011D2701F2373a24E3A72a6095Efb72c1Ae"; // 新部署的合约地址
 const USDT_ADDRESS = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"; // Arbitrum Mainnet USDT 地址
 const ARB_EXPLORER_URL = "https://arbiscan.io/tx/";
 const CHAIN_ID = "42161"; // Arbitrum Mainnet chainId
